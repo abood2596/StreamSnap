@@ -1,55 +1,41 @@
+const apiUrl = "https://streamsnap-backend.abood.repl.co/download";
 
-function startDownload() {
-  const url = document.getElementById('urlInput').value.trim();
-  const format = document.getElementById('formatSelect').value;
-  const quality = document.getElementById('qualitySelect').value;
-  const status = document.getElementById('status');
-  const progressBar = document.getElementById('progressBar');
+document.getElementById("downloadBtn").addEventListener("click", async () => {
+  const url = document.getElementById("urlInput").value;
+  const format = document.getElementById("formatSelect").value;
+  const quality = document.getElementById("qualitySelect").value;
 
   if (!url) {
-    status.textContent = "Please enter a YouTube URL.";
+    alert("Please enter a video URL.");
     return;
   }
 
-  progressBar.style.width = "0%";
-  status.textContent = "Preparing download...";
+  document.getElementById("statusBar").textContent = "Processing...";
 
-  fetch('http://localhost:3000/download', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ url, format, quality })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Failed to download");
-    }
-    const total = 100;
-    let current = 0;
-
-    const interval = setInterval(() => {
-      current += 10;
-      if (current > total) current = total;
-      progressBar.style.width = current + "%";
-    }, 300);
-
-    return response.blob().then(blob => {
-      clearInterval(interval);
-      progressBar.style.width = "100%";
-      status.textContent = "Download ready";
-
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = format === 'mp3' ? 'audio.mp3' : 'video.mp4';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+  try {
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ url, format, quality })
     });
-  })
-  .catch(error => {
-    progressBar.style.width = "0%";
-    status.textContent = "Error: " + error.message;
-  });
-}
+
+    if (!response.ok) {
+      throw new Error("Download failed.");
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = `video.${format}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    document.getElementById("statusBar").textContent = "Download complete!";
+  } catch (error) {
+    document.getElementById("statusBar").textContent = "Error: " + error.message;
+  }
+});
