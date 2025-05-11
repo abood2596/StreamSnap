@@ -7,80 +7,33 @@ function startDownload() {
   const downloadBtn = document.querySelector('button');
 
   if (!url) {
-    status.textContent = "Please enter a YouTube URL.";
+    status.textContent = "الرجاء إدخال رابط يوتيوب";
     status.style.color = "#ff4b4b";
     return;
   }
 
-  // Reset UI
   progressBar.style.width = "0%";
-  status.textContent = "Preparing download...";
+  status.textContent = "جاري التحضير للتحميل...";
   status.style.color = "#fff";
   downloadBtn.disabled = true;
-  downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+  downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحميل...';
 
-  // استبدل هذا الرابط برابط Replit الخاص بك
-  const serverUrl = 'https://your-project-name.your-username.repl.co/download';
-  
-  fetch(serverUrl, {
+  fetch('/download', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ 
-      url, 
-      format, 
-      quality 
-    })
+    body: JSON.stringify({ url, format, quality })
   })
   .then(response => {
     if (!response.ok) {
-      return response.json().then(err => { throw new Error(err.error || "Failed to download"); });
-    }
-    
-    const contentLength = +response.headers.get('Content-Length');
-    let receivedLength = 0;
-    
-    const reader = response.body.getReader();
-    const chunks = [];
-    
-    function pump() {
-      return reader.read().then(({ done, value }) => {
-        if (done) {
-          const blob = new Blob(chunks);
-          handleDownloadComplete(blob);
-          return;
-        }
-        
-        chunks.push(value);
-        receivedLength += value.length;
-        
-        // Progress update (حساب نسبة التحميل الفعلية إذا كان Content-Length متوفر)
-        const progress = contentLength ? Math.round((receivedLength / contentLength) * 100) : progressBar.style.width;
-        progressBar.style.width = `${progress}%`;
-        status.textContent = `Downloading... ${progress}%`;
-        
-        return pump();
+      return response.json().then(err => { 
+        throw new Error(err.error || "فشل التحميل"); 
       });
     }
-    
-    return pump();
+    return response.blob();
   })
-  .catch(error => {
-    console.error('Download error:', error);
-    progressBar.style.width = "0%";
-    status.textContent = "Error: " + error.message;
-    status.style.color = "#ff4b4b";
-    downloadBtn.disabled = false;
-    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
-  });
-
-  function handleDownloadComplete(blob) {
-    progressBar.style.width = "100%";
-    status.textContent = "Download complete!";
-    status.style.color = "#4CAF50";
-    
+  .then(blob => {
     const downloadUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = downloadUrl;
@@ -89,11 +42,42 @@ function startDownload() {
     a.click();
     a.remove();
     
-    // تحرير الذاكرة بعد التنزيل
+    progressBar.style.width = "100%";
+    status.textContent = "تم التحميل بنجاح!";
+    status.style.color = "#4CAF50";
+    
     setTimeout(() => {
       window.URL.revokeObjectURL(downloadUrl);
       downloadBtn.disabled = false;
-      downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download';
+      downloadBtn.innerHTML = '<i class="fas fa-download"></i> تحميل';
     }, 100);
+  })
+  .catch(error => {
+    console.error('Download error:', error);
+    progressBar.style.width = "0%";
+    status.textContent = "خطأ: " + error.message;
+    status.style.color = "#ff4b4b";
+    downloadBtn.disabled = false;
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> تحميل';
+  });
+}
+
+function extractVideoID(url) {
+  const regExp = /^.*(youtu.be\/|v=|\/embed\/|\/shorts\/)([^#\&?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+}
+
+function updateThumbnail() {
+  const url = document.getElementById('urlInput').value.trim();
+  const videoId = extractVideoID(url);
+  const thumbnail = document.getElementById('videoThumbnail');
+  
+  if (videoId) {
+    thumbnail.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    thumbnail.style.display = 'block';
+  } else {
+    thumbnail.src = '';
+    thumbnail.style.display = 'none';
   }
 }
