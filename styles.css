@@ -1,0 +1,114 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #121212;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background: #1f1f1f;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #ff4b4b;
+}
+
+.tagline {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.options label {
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-right: 0.3rem;
+}
+
+select {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: #fff;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #ff4b4b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #e53935;
+}
+
+#progressContainer {
+  width: 100%;
+  height: 8px;
+  background: #333;
+  border-radius: 5px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff4b4b, #ff6f61);
+  transition: width 0.4s ease;
+}
+
+#status {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+footer {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: #666;
+}

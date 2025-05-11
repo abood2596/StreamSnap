@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StreamSnap - YouTube Downloader</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1><i class="fab fa-youtube"></i> StreamSnap</h1>
+    <p class="tagline">Download YouTube videos and audio instantly</p>
+
+    <input type="text" id="urlInput" placeholder="Paste YouTube video URL here..." oninput="updateThumbnail()" />
+
+    <div class="thumbnail-container" id="thumbnailContainer">
+      <img id="videoThumbnail" src="" alt="Video Thumbnail" style="display:none; width: 100%; border-radius: 8px; margin-bottom: 1rem;" />
+    </div>
+
+    <div class="options">
+      <div class="option-group">
+        <label for="formatSelect">Format:</label>
+        <select id="formatSelect">
+          <option value="mp4">Video (.mp4)</option>
+          <option value="mp3">Audio (.mp3)</option>
+        </select>
+      </div>
+      <div class="option-group">
+        <label for="qualitySelect">Quality:</label>
+        <select id="qualitySelect">
+          <option value="1080p">1080p</option>
+          <option value="720p">720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+          <option value="auto">Auto</option>
+        </select>
+      </div>
+    </div>
+
+    <button onclick="startDownload()">
+      <i class="fas fa-download"></i> Download
+    </button>
+
+    <div id="progressContainer">
+      <div id="progressBar"></div>
+    </div>
+
+    <p id="status"></p>
+
+    <footer>
+      <p>Built by Aboud with <i class="fas fa-heart"></i></p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    function extractVideoID(url) {
+      const regExp = /^.*(youtu.be\/|v=|\/embed\/|\/shorts\/)([^#\&?]*).*/;
+      const match = url.match(regExp);
+      return match && match[2].length === 11 ? match[2] : null;
+    }
+
+    function updateThumbnail() {
+      const url = document.getElementById('urlInput').value.trim();
+      const videoId = extractVideoID(url);
+      const thumbnail = document.getElementById('videoThumbnail');
+      const container = document.getElementById('thumbnailContainer');
+
+      if (videoId) {
+        thumbnail.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        thumbnail.style.display = 'block';
+      } else {
+        thumbnail.src = '';
+        thumbnail.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
